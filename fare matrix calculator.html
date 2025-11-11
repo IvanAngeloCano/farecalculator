@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Click Dynamic Malolos - Bulakan Fare Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        /* Style for all radio button groups */
+        .radio-group {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .radio-group input[type="radio"] {
+            display: none; /* Hide the default radio button */
+        }
+        .radio-group label.radio-label {
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #007bff;
+            background-color: white;
+            transition: all 0.2s;
+            text-align: center;
+            margin: 0 5px;
+        }
+        /* Special sizing for passenger count */
+        .passenger-count-group label.radio-label {
+            flex-grow: 1; 
+            padding: 5px;
+        }
+        /* Style when radio button is checked/active */
+        .radio-group input[type="radio"]:checked + label.radio-label {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.4);
+        }
+        
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px dashed #28a745;
+            border-radius: 5px;
+            background-color: #e2f0e7;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #155724;
+        }
+        #result h3 {
+            margin: 5px 0 0;
+            color: #333;
+        }
+        .note {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body onload="calculateFare()">
+
+<div class="container">
+     <!--<h1>Malolos - Bulakan Fare Calculator</h1>-->
+
+    <label>Number of Passengers:</label>
+    <div class="radio-group passenger-count-group" onchange="calculateFare()">
+        <input type="radio" id="p1" name="numPassengers" value="1" checked>
+        <label for="p1" class="radio-label">1</label>
+        <input type="radio" id="p2" name="numPassengers" value="2">
+        <label for="p2" class="radio-label">2</label>
+        <input type="radio" id="p3" name="numPassengers" value="3">
+        <label for="p3" class="radio-label">3</label>
+        <input type="radio" id="p4" name="numPassengers" value="4">
+        <label for="p4" class="radio-label">4</label>
+        <input type="radio" id="p5" name="numPassengers" value="5">
+        <label for="p5" class="radio-label">5</label>
+    </div>
+    
+    <label for="startBarangay">Starting Barangay:</label>
+    <select id="startBarangay" onchange="calculateFare()">
+        <option value="0">--- Select Starting Point ---</option>
+        <option value="Bagumbayan / San Jose">Bagumbayan / San Jose (Counted as 1)</option>
+        <option value="Maysantol">Maysantol</option>
+        <option value="San Nicolas">San Nicolas</option>
+        <option value="Pitpitan">Pitpitan</option>
+        <option value="Mambog">Mambog</option>
+        <option value="Matimbo">Matimbo</option>
+        <option value="Panasahan">Panasahan</option>
+        <option value="Bagna">Bagna</option>
+        <option value="Atlag">Atlag</option>
+        <option value="San Juan / Sto. Rosario">San Juan / Sto. Rosario (Counted as 1)</option>
+    </select>
+
+    <label for="endBarangay">Destination Barangay:</label>
+    <select id="endBarangay" onchange="calculateFare()">
+        <option value="0">--- Select Destination Point ---</option>
+        <option value="Bagumbayan / San Jose">Bagumbayan / San Jose (Counted as 1)</option>
+        <option value="Maysantol">Maysantol</option>
+        <option value="San Nicolas">San Nicolas</option>
+        <option value="Pitpitan">Pitpitan</option>
+        <option value="Mambog">Mambog</option>
+        <option value="Matimbo">Matimbo</option>
+        <option value="Panasahan">Panasahan</option>
+        <option value="Bagna">Bagna</option>
+        <option value="Atlag">Atlag</option>
+        <option value="San Juan / Sto. Rosario">San Juan / Sto. Rosario (Counted as 1)</option>
+    </select>
+    
+    <label>Passenger Type (Fare Per Person):</label>
+    <div class="radio-group passenger-type-group" onchange="calculateFare()">
+        <input type="radio" id="regular" name="passengerType" value="regular" checked>
+        <label for="regular" class="radio-label">
+            Regular (₱13 Min)
+        </label>
+        
+        <input type="radio" id="discounted" name="passengerType" value="discounted">
+        <label for="discounted" class="radio-label">
+            Discounted (₱11 Min)
+        </label>
+    </div>
+
+    <div id="result">
+        Please select both a starting and a destination barangay.
+    </div>
+
+    <p class="note">
+        *Minimum fare covers the first **4** barangay counts.<br>
+        *Fare is calculated per person based on the number of barangay counts traveled.
+    </p>
+
+</div>
+
+<script>
+    const BARANGAYS = [
+        "Bagumbayan / San Jose",
+        "Maysantol",
+        "San Nicolas",
+        "Pitpitan",
+        "Mambog",
+        "Matimbo",
+        "Panasahan",
+        "Bagna",
+        "Atlag",
+        "San Juan / Sto. Rosario"
+    ];
+
+    const MIN_FARE_REGULAR = 13;
+    const MIN_FARE_DISCOUNTED = 11;
+    const MIN_BARANGAY_COUNT = 4;
+    const ADDITIONAL_FARE_PER_BARANGAY = 2;
+
+    function calculateFare() {
+        // 1. Get Inputs
+        // Get the value of the CHECKED radio button for number of passengers
+        const numPassengersElement = document.querySelector('input[name="numPassengers"]:checked');
+        const numPassengers = numPassengersElement ? parseInt(numPassengersElement.value) : 1;
+        
+        const start = document.getElementById('startBarangay').value;
+        const end = document.getElementById('endBarangay').value;
+        
+        // Get the value of the CHECKED radio button for passenger type
+        const type = document.querySelector('input[name="passengerType"]:checked').value;
+        
+        const resultDiv = document.getElementById('result');
+
+        if (start === '0' || end === '0') {
+            resultDiv.innerHTML = "❌ **Please select both a Starting and Destination Barangay.**";
+            return;
+        }
+
+        // 2. Calculate Fare PER PERSON
+        const startIndex = BARANGAYS.indexOf(start);
+        const endIndex = BARANGAYS.indexOf(end);
+        
+        const barangayCount = Math.abs(endIndex - startIndex) + 1;
+
+        const minFare = type === 'regular' ? MIN_FARE_REGULAR : MIN_FARE_DISCOUNTED;
+        let farePerPerson = minFare; 
+
+        if (barangayCount > MIN_BARANGAY_COUNT) {
+            const additionalBarangays = barangayCount - MIN_BARANGAY_COUNT;
+            const additionalCost = additionalBarangays * ADDITIONAL_FARE_PER_BARANGAY;
+            farePerPerson = minFare + additionalCost;
+        }
+        
+        // 3. Calculate TOTAL Fare
+        const totalFare = farePerPerson * numPassengers;
+
+        // 4. Display Result
+        const typeDisplay = type === 'regular' ? 'Regular' : 'Discounted (Senior/Student)';
+        const startText = startIndex < endIndex ? `**${start}** to **${end}**` : `**${end}** to **${start}**`;
+        
+                //<p>Route: **${start}** (Same Barangay)</p>
+                //<p>Passenger Type: **${typeDisplay}**</p>
+                //<p>Passengers: **${numPassengers}**</p>
+
+
+                //<p>Route: ${startText}</p>
+               
+                //<p>Passenger Type: **${typeDisplay}**</p>
+                //<p>Passengers: **${numPassengers}**</p>
+        if (start === end) {
+             resultDiv.innerHTML = `
+
+                <p>Fare Per Person: **₱${minFare.toFixed(2)}**</p>
+                <h3>TOTAL FARE: ₱${totalFare.toFixed(2)}</h3>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+ <p>Barangay Counts Traveled: **${barangayCount}**</p>
+                <p>Fare Per Person: **₱${farePerPerson.toFixed(2)}**</p>
+                <h3>TOTAL FARE: ₱${totalFare.toFixed(2)}</h3>
+            `;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', calculateFare);
+</script>
+</body>
+</html>
